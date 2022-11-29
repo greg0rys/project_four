@@ -6,13 +6,13 @@
  */
 
 // class default constructor
-website::website():topic(nullptr),URL(nullptr),summary(nullptr),review
+website::website():siteKey(nullptr),topic(nullptr),URL(nullptr),summary(nullptr),review
 (nullptr), rating(0){}
 
 
 
 // class copy constructor
-website::website(const website &aSite):topic(nullptr), URL(nullptr), summary
+website::website(const website &aSite):siteKey(nullptr),topic(nullptr), URL(nullptr), summary
 (nullptr),review(nullptr), rating(0)
 {
     *this = aSite;
@@ -31,6 +31,8 @@ website::~website()
  */
 void website::destroySelf()
 {
+	if(siteKey)
+		delete []siteKey;
     if(topic)
         delete []topic;
     if(URL)
@@ -41,7 +43,7 @@ void website::destroySelf()
         delete []review;
 
     // set all pointers to null pointer.
-    topic = URL = summary = review = nullptr;
+    siteKey = topic = URL = summary = review = nullptr;
     rating = 0;
 }
 
@@ -99,6 +101,16 @@ void website::writeReview(const char * reviewInfo)
     strcpy(this->review, reviewInfo);
 }
 
+void website::setKey(const char * key)
+{
+	if(!key)
+		return;
+	if(this->siteKey)
+		delete []siteKey;
+	siteKey = nullptr;
+	siteKey = new char[strlen(key) + 1];
+	strcpy(siteKey, key);
+}
 
 /*
  * Set the rating for a given website
@@ -158,6 +170,13 @@ char* website::getReview() const
 
 
 
+char* website::getKey() const
+{
+	return this->siteKey;
+}
+
+
+
 // overloaded operator=
 website& website::operator=(const website &aSite)
 {
@@ -165,6 +184,17 @@ website& website::operator=(const website &aSite)
         return *this;
 
     destroySelf();
+
+	if(!aSite.siteKey)
+	{
+		siteKey = nullptr;
+	}
+	else
+	{
+		siteKey = new char[strlen(aSite.siteKey) + 1];
+		strcpy(siteKey,aSite.siteKey);
+	}
+
 
     if(!aSite.topic)
     {

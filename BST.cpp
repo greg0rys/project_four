@@ -20,7 +20,7 @@ BST& BST::operator=(const BST &aTree)
 
     if(this == &aTree)
         return *this;
-    destroy();
+    destroy(root);
 
     copyTree(this->root, aTree.root);
     height = aTree.height;
@@ -74,3 +74,25 @@ void BST::_print(node * root)
     _print(root->rightChild);
 }
 
+BST::node * BST::placeNode(node * root, const website & aSite)
+{
+
+	node * temp = nullptr;
+	if(!root)
+		return new node(aSite,nullptr,nullptr);
+
+	if(root->data->getKey() > aSite.getKey())
+	{
+		temp = placeNode(root->leftChild, aSite);
+		root->leftChild = temp;
+		return root;
+	}
+
+	temp = placeNode(root->rightChild, aSite);
+	root->rightChild = temp;
+	return root;
+}
+
+
+}
+		

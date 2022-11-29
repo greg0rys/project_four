@@ -65,4 +65,6 @@ private:
     bool _removeWebsite(node *&, const char *);
     void _print(node *);
     int getCurrentHeight() const;
+	node * placeNode(node *, const website &); // recurse to place this node in the tree
+	bool search(const char *, int &) const; // search for a node return where it should be
 };

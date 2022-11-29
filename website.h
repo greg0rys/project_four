@@ -23,6 +23,7 @@ public:
 
     // setters
     void setTopic(const char *);
+	void setKey(const char *);
     void setURL(const char *);
     void writeSummary(const char *);
     void writeReview(const char *);
@@ -34,8 +35,10 @@ public:
     char * getURL() const;
     char * getSummary() const;
     char * getReview() const;
+	char * getKey() const;
 
 private:
+	char * siteKey;
     char * topic;
     char * URL;
     char * summary;
