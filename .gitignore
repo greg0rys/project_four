@@ -1,0 +1,5 @@
+cmake-build-debug
+logins.txt
+*.o
+app
+.idea/
