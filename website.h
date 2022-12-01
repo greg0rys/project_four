@@ -19,6 +19,9 @@ public:
 
     // operator overlaods
     website& operator=(const website &);
+    friend bool operator==(const website &, const website &);
+    friend bool operator>(const website &, const website &);
+    friend bool operator<(const website &, const website &);
     friend ostream& operator<<(ostream &, website &);
 
     // setters
@@ -46,4 +49,5 @@ private:
     int    rating;
 
     void destroySelf(); // deallocate all pointers in use.
+    void makeKey(const char *);
 };

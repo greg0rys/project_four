@@ -112,6 +112,12 @@ void website::setKey(const char * key)
 	strcpy(siteKey, key);
 }
 
+
+void website::makeKey(const char *URL)
+{
+    substr()
+}
+
 /*
  * Set the rating for a given website
  * @param newRating the rating we are setting this website too.
@@ -251,4 +257,23 @@ ostream& operator<<(ostream & out, website &aSite)
     out << "\tReview:\n\t" <<aSite.review << endl;
 
     return out;
+}
+
+
+bool operator==(const website & siteA, const website & siteB)
+{
+
+    return strcmp(siteA.siteKey,siteB.siteKey) == 0;
+}
+
+// if the left hand args key is greater than r hands key
+bool operator>(const website &siteA, const website &siteB)
+{
+    return strcmp(siteA.siteKey,siteB.siteKey) > 0;
+}
+
+// if l hand args key is less than r hands key
+bool operator<(const website &siteA, const website &siteB)
+{
+    return strcmp(siteA.siteKey, siteB.siteKey) < 0;
 }

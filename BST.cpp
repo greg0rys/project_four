@@ -56,14 +56,8 @@ void BST::destroy(node *& sTree)
     sTree = nullptr;
 }
 
-// recursive print in order
-// to display a BST in order
-// display all nodes in left tree of root first
-// then root
-// then the roots right child
-// this is inorder because all nodes in left are less than
-// root, and all nodes in right are greater than root
-// leaving root as the middle value
+
+
 void BST::_print(node * root)
 {
     if(!root)
@@ -74,25 +68,36 @@ void BST::_print(node * root)
     _print(root->rightChild);
 }
 
+BST::node * BST::search(node * start,  char *key, int &pos)
+
+{
+    if(!start || strcmp(start->data->getKey(), key) == 0)
+        return start;
+
+    if(root->data->getKey() > key)
+    {
+        return search(start->leftChild, key, ++pos);
+    }
+
+    return search(start->rightChild, key, ++pos);
+}
+
 BST::node * BST::placeNode(node * root, const website & aSite)
 {
 
-	node * temp = nullptr;
+
 	if(!root)
 		return new node(aSite,nullptr,nullptr);
 
-	if(root->data->getKey() > aSite.getKey())
+	if(*root->data > aSite)
 	{
-		temp = placeNode(root->leftChild, aSite);
-		root->leftChild = temp;
-		return root;
+		root->leftChild = placeNode(root->leftChild, aSite);
+        return root;
 	}
 
-	temp = placeNode(root->rightChild, aSite);
-	root->rightChild = temp;
+	root->rightChild = placeNode(root->rightChild, aSite);
+
 	return root;
 }
 
 
-}
-		
