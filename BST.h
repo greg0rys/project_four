@@ -22,6 +22,7 @@ public:
     bool retrieve(const char *, website *&, int &);
     bool print();
     int getHeight() const;
+	
 
 private:
     struct node
