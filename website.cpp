@@ -113,9 +113,13 @@ void website::setKey(const char * key)
 }
 
 
-void website::makeKey(const char *URL)
+void website::makeKey(char *URL)
 {
-    substr()
+    char * key = new char[strlen(strrchr(URL, '/')) + 1];
+    strcpy(key, strrchr(URL,'/'));
+    for(auto i = 0; i < strlen(key); i++)
+        key[i] = key[i + 1];
+    siteKey = key;
 }
 
 /*

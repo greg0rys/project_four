@@ -49,5 +49,5 @@ private:
     int    rating;
 
     void destroySelf(); // deallocate all pointers in use.
-    void makeKey(const char *);
+    void makeKey( char *);
 };

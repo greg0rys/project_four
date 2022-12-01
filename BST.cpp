@@ -34,6 +34,7 @@ void BST::copyTree(BST::node *&destTree, BST::node *sourceTree)
     if(!sourceTree) return;
     destTree = new node(*(sourceTree->data),sourceTree->leftChild,
                         sourceTree->rightChild);
+    copyTree(destTree->next, sourceTree->next);
 
 }
 
@@ -43,7 +44,10 @@ BST::~BST()
     destroy(root);
 }
 
-
+/**
+ * Destroy our BST by recursion. Pass in both the left and right subtree and have all nodes deleted.
+ * @param sTree
+ */
 void BST::destroy(node *& sTree)
 {
     if(!sTree) return;
@@ -53,11 +57,15 @@ void BST::destroy(node *& sTree)
     destroy(sTree->leftChild);
     destroy(sTree->rightChild);
 
-    sTree = nullptr;
+    sTree = sTree->leftChild = sTree->rightChild =  nullptr;
 }
 
 
-
+/**
+ * Print the BST in order by traversing left -> root -> right
+ * @param root - the root of our binary tree.
+ * @return NULL
+ */
 void BST::_print(node * root)
 {
     if(!root)
@@ -82,6 +90,15 @@ BST::node * BST::search(node * start,  char *key, int &pos)
     return search(start->rightChild, key, ++pos);
 }
 
+
+bool BST::insert(const website &aSite)
+{
+    root = placeNode(root,aSite);
+
+    return true;
+}
+
+
 BST::node * BST::placeNode(node * root, const website & aSite)
 {
 
@@ -95,9 +112,13 @@ BST::node * BST::placeNode(node * root, const website & aSite)
         return root;
 	}
 
+
 	root->rightChild = placeNode(root->rightChild, aSite);
 
 	return root;
 }
+
+
+bool BST::remove(const char * topic)
 
 
