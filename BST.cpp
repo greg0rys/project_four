@@ -32,9 +32,13 @@ BST& BST::operator=(const BST &aTree)
 void BST::copyTree(BST::node *&destTree, BST::node *sourceTree)
 {
     if(!sourceTree) return;
+
     destTree = new node(*(sourceTree->data),sourceTree->leftChild,
                         sourceTree->rightChild);
-    copyTree(destTree->next, sourceTree->next);
+    copyTree(destTree->leftChild, sourceTree->leftChild);
+    copyTree(destTree->rightChild, sourceTree->rightChild);
+    root = new node(sourceTree->data)
+
 
 }
 
