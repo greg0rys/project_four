@@ -17,12 +17,13 @@ public:
 
     bool insert(const website &);
     bool remove(const char *);
-    bool removeWebsite(const char *, website &); // use a website ref to
+    bool removeWebsite(website &); // use a website ref to
     // copy deleted data for use to see
     bool retrieve(const char *, website *&, int &);
     bool print();
     int getHeight() const;
-	
+    bool isEmpty() const;
+
 
 private:
     struct node
@@ -57,15 +58,19 @@ private:
             data = nullptr;
         }
     };
+
+
     node * root;
     int height;
+
+
     void destroy(node *&);
     void copyTree(node *& destTree, node * sourceTree);
     bool _insert(node *&, const website &);
     bool _remove(node *&, const char *);
-    bool _removeWebsite(node *&, const char *);
     void _print(node *);
-    int getCurrentHeight() const;
+    int getCurrentHeight(const node *) const;
+    BST::node * inOrderSuccessor(node *);
 
 	node * placeNode(node *, const website &); // recurse to place this node in the tree
 	node * search( node * , char *, int &) ; // search for a
