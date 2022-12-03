@@ -129,12 +129,12 @@ private:
     void destroy(node *&);
     void destroyListLink(listLink *&);
     void copyTree(node *& destTree, node * sourceTree);
-    bool _remove(node *&, const char *);
+    bool _remove(node *&, const char *, const bool );
     void _print(node *);
     void _getTopics(const node *, listLink *&);
     void _getKeys(BST::node *, BST::listLink *&);
     int getCurrentHeight(const node *) const;
-    int getFrequency(const char *);
+
 
     BST::node * inOrderSuccessor(node *);
 	node * placeNode(node *, const website &); // recurse to place this node in the tree

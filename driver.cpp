@@ -52,10 +52,20 @@ void menuOperations(BST &aTree, int & operationNo)
         case 1:
             generateWebsite(aWebsite);
             if(aTree.insert(aWebsite))
-                cout << "Success added: " << aWebsite.getKey() << endl;
+                cout << "Success added: " << aWebsite.getKey() << endl
+                     << "Tree now has: " << aTree.getCount() << " websites\n";
             break;
 
         case 2:
+            if(aTree.isEmpty())
+            {
+                cout << "The tree is empty, nothing to search for.\n";
+                break;
+            }
+
+            cout << "****** HERES A LIST OF SITE KEYS ****** \n";
+            aTree.printKeys();
+            cout << endl;
             cout << "Please enter the keyword of the website to retrieve: ";
             getInput(searchKey);
             if(aTree.retrieve(searchKey, aWebsite))
@@ -110,6 +120,12 @@ void menuOperations(BST &aTree, int & operationNo)
 
 
         case 5:
+            if(aTree.isEmpty())
+            {
+                cout << "The tree is empty nothing to remove\n";
+                break;
+            }
+
             cout << "*** Here's a list of keywords *** " << endl;
             aTree.printKeys();
 
@@ -123,8 +139,7 @@ void menuOperations(BST &aTree, int & operationNo)
             }
             else
             {
-                cout << "Removed: " << aWebsite.getKey() << " = " <<
-                aWebsite.getURL() << endl;
+                cout << "Removed: " << aWebsite.getKey() << endl;
             }
 
 
@@ -276,5 +291,5 @@ int main()
 {
     cout << "Starting the program " << endl;
     menu();
-    cout << endl << "[ Done ]";
+    cout << endl << "[ Done ]\n";
 }

@@ -102,18 +102,30 @@ void website::writeReview(const char * reviewInfo)
     strcpy(this->review, reviewInfo);
 }
 
+
+/*
+ * Set this websites search key.
+ * @param key a char array with the sites new site key
+ */
 void website::setKey(const char * key)
 {
 	if(!key)
 		return;
+
 	if(this->siteKey)
 		delete []siteKey;
+
 	siteKey = nullptr;
 	siteKey = new char[strlen(key) + 1];
 	strcpy(siteKey, key);
 }
 
 
+/*
+ * Generate a search key for each website by taking everything after the last
+ * slash in the objects url
+ *
+ */
 void website::key()
 {
     char * key = new char[strlen(strrchr(URL, '/')) + 1];
@@ -121,6 +133,9 @@ void website::key()
     for(auto i = 0; i < strlen(key); i++)
         key[i] = key[i + 1];
     setKey(key);
+
+    if(key)
+        delete []key;
 }
 
 /*
@@ -181,6 +196,10 @@ char* website::getReview() const
 
 
 
+/*
+ * Get this websites search key.
+ * @return a char pointer to the key of this object.
+ */
 char* website::getKey() const
 {
 	return this->siteKey;

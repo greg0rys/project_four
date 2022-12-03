@@ -108,6 +108,7 @@ void BST::_print(node * tRoot)
     _print(tRoot->rightChild);
 }
 
+
 void BST::printTopics()
 {
     if(isEmpty())
@@ -130,6 +131,15 @@ void BST::printTopics()
 }
 
 
+/*
+ * Print all the current keys for each website along with the URL
+ * they go with. Outputting the URL the key belongs to is needed as the user
+ * is not supplying the key, the website ADT is creating its own key
+ * based on some random cstring in the URL
+ *
+ * EX: linked-list-notes => https://www.greg.com/linked-list-notes
+ * <KEY => URL>
+ */
 void BST::printKeys()
 {
     if(isEmpty())
@@ -141,7 +151,7 @@ void BST::printKeys()
 
     for(auto *curr = key; curr; curr = curr->next)
     {
-        cout << idx << ".\t" << curr->siteKey << " => " << curr->topic
+        cout << idx << ".\t" << curr->topic << " => " << curr->siteKey
              << endl;
         idx++;
     }
@@ -150,6 +160,10 @@ void BST::printKeys()
 }
 
 
+/*
+ * Create a linear SLL of all topics in the tree.
+ * Creating this list allows us to quickly traverse and print all topic names.
+ */
 void BST::_getTopics(const node *tRoot, BST::listLink *&
 topicsList)
 {
@@ -164,6 +178,10 @@ topicsList)
 }
 
 
+/*
+ * get a linear SLL of all website keys in the tree.
+ * Use of SLL here allows us to quickly print each key => url pair.
+ */
 void BST::_getKeys(BST::node *tRoot, BST::listLink *& keyList)
 {
 
@@ -179,7 +197,12 @@ void BST::_getKeys(BST::node *tRoot, BST::listLink *& keyList)
 }
 
 
-
+/*
+ * Find a website in our tree.
+ * @param tRoot the root of the current BST
+ * @param key the search key used to locate the item
+ * @return a pointer to the website in the tree. nullptr if not found.
+ */
 BST::node * BST::search(node * tRoot, char *key)
 
 {
@@ -194,13 +217,21 @@ BST::node * BST::search(node * tRoot, char *key)
     return search(tRoot->rightChild, key);
 }
 
-
+/*
+ * Check if the tree is empty
+ * @return true if the root node is nullptr false if else.
+ */
 bool BST::isEmpty() const
 {
     return root == nullptr;
 }
 
 
+/*
+ * Insert a website into our tree in a sorted way.
+ * @param website & a ref to the website we wish to add to the tree.
+ * @return true if node count increased by 1 false if else.
+ */
 bool BST::insert(const website &aSite)
 {
     int updatedCount,currentCount;
@@ -216,12 +247,18 @@ bool BST::insert(const website &aSite)
 }
 
 
+/*
+ * recurse our binary tree to find the proper place to insert the new website
+ * @param tRoot the root of the binary tree we wish to add too
+ * @param aSite a ref to a website we wish to place in the tree.
+ */
 BST::node * BST::placeNode(node * tRoot, const website & aSite)
 {
 
 
 	if(!tRoot)
     {
+        cout << "Adding root node\n";
         count++;
         return new node(aSite,nullptr,nullptr);
 
@@ -229,11 +266,12 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
 
 	if(*tRoot->data > aSite)
 	{
+        cout << "Adding as left child \n";
         tRoot->leftChild = placeNode(tRoot->leftChild, aSite);
         return tRoot;
 	}
 
-
+    cout << "Adding as right child \n";
     tRoot->rightChild = placeNode(tRoot->rightChild, aSite);
 
 	return tRoot;
@@ -260,7 +298,7 @@ BST::node* BST::inOrderSuccessor(node * tRoot)
  */
 bool BST::remove(const char * topic)
 {
-    return _remove(root, topic);
+    return _remove(root, topic,false);
 
 }
 
@@ -271,7 +309,7 @@ bool BST::remove(const char * topic)
  */
 bool BST::removeWebsite(website &aSite)
 {
-    return _remove(root, aSite.getKey());
+    return _remove(root, aSite.getKey(), true);
 }
 
 /*
@@ -282,58 +320,104 @@ bool BST::removeWebsite(website &aSite)
  * @param tRoot the root of the binary tree
  * @param key - the key we want to use to identify websites
  */
-bool BST::_remove(node *& tRoot, const char * key)
+bool BST::_remove(node *& tRoot, const char * key, const bool singleSite)
 {
     node * temp = nullptr;
 
     if(!tRoot)
         return false;
 
-    // current nodes key is > search key; remove from left subtree
-    if(strcmp(tRoot->data->getTopic(), key) < 0)
-        return _remove(tRoot->leftChild, key);
-    // current nodes key is < search key; remove from right subtree.
-    if(strcmp(tRoot->data->getTopic(), key) > 0)
-        return _remove(tRoot->rightChild, key);
+    // remove a single website based on site key and not site topic
+    if(singleSite)
+    {
+        if(strcmp(tRoot->data->getKey(), key) == 0)
+        {
+            if(!tRoot->leftChild && !tRoot->rightChild)
+            {
+                delete tRoot;
+                tRoot = nullptr;
+                return true;
+            }
+            else if(tRoot->rightChild)
+            {
+                temp = tRoot->leftChild;
+                delete tRoot;
+                tRoot = temp;
+                return true;
+            }
+            else if(tRoot->leftChild)
+            {
+                temp = tRoot->rightChild;
+                delete tRoot;
+                tRoot = temp;
+                return true;
+            }
+            else
+            {
+                temp = inOrderSuccessor(tRoot);
+                tRoot->data = temp->data;
+                _remove(tRoot->rightChild, key, singleSite);
+            }
+        }
+    }
+    else // remove all websites of a given topic.
+    {
+        // current nodes key is > search key; remove from left subtree
+        if(strcmp(tRoot->data->getTopic(), key) < 0)
+            return _remove(tRoot->leftChild, key, singleSite);
+        // current nodes key is < search key; remove from right subtree.
+        if(strcmp(tRoot->data->getTopic(), key) > 0)
+            return _remove(tRoot->rightChild, key, singleSite);
 
-    if(!tRoot->leftChild && !tRoot->rightChild)
-    {
-        delete tRoot;
-        tRoot = nullptr;
-        return true;
-    }
-    else if(tRoot->rightChild)
-    {
-        temp = tRoot->leftChild;
-        delete tRoot;
-        tRoot = temp;
-        return true;
-    }
-    else if(tRoot->leftChild)
-    {
-        temp = tRoot->rightChild;
-        delete tRoot;
-        tRoot = temp;
-        return true;
+        if(!tRoot->leftChild && !tRoot->rightChild)
+        {
+            delete tRoot;
+            tRoot = nullptr;
+            return true;
+        }
+        else if(tRoot->rightChild)
+        {
+            temp = tRoot->leftChild;
+            delete tRoot;
+            tRoot = temp;
+            return true;
+        }
+        else if(tRoot->leftChild)
+        {
+            temp = tRoot->rightChild;
+            delete tRoot;
+            tRoot = temp;
+            return true;
+        }
+
+        // node has two children
+        temp = inOrderSuccessor(tRoot);
+        tRoot->data = temp->data;
+        _remove(tRoot->rightChild, key, singleSite);
     }
 
-    // node has two children
-    temp = inOrderSuccessor(tRoot);
-    tRoot->data = temp->data;
-    _remove(tRoot->rightChild, temp->data->getTopic());
+
 
     return true;
 }
 
 
-
+/*
+ * Get the current height of the BST
+ * @return the length of the longest path from root to leaf.
+ */
 int BST::getHeight() const
 {
     return getCurrentHeight(root);
 }
 
 
-
+/*
+ * recurse our tree and get the height of each of its subtrees
+ * the subtree with the largest height = the height of the bst.
+ * @param tRoot a node that represents the root of the binary search tree.
+ * @return the height of the binary search tree int.
+ */
 int BST::getCurrentHeight(const node * tRoot) const
 {
     int leftHeight, rightHeight = 0;
@@ -344,13 +428,18 @@ int BST::getCurrentHeight(const node * tRoot) const
     // get the height of roots right and left trees
     // the height of the tree is the total height of its
     // largest subtree
+    // these count the number of times current height is called.
     leftHeight = getCurrentHeight(tRoot->leftChild);
     rightHeight = getCurrentHeight(tRoot->rightChild);
 
+    // return which ever tree is bigger as the height of the BST.
     return (leftHeight >= rightHeight ? (leftHeight + 1) : (rightHeight + 1));
 }
 
 
+/*
+ * Overloaded out stream operator; Allows easy output of a bst.
+ */
 ostream& operator<<(ostream &out, BST & bTree)
 {
     if(bTree.isEmpty())
@@ -361,7 +450,12 @@ ostream& operator<<(ostream &out, BST & bTree)
 }
 
 
-
+/*
+ * Get a website from our tree based on its keyword
+ * @param siteKey the char pointer with the site key we wish to obtrain
+ * @param theSite, a ref to the site if found, return nullptr if else
+ *
+ */
 bool BST::retrieve(const char *siteKey, website & theSite)
 {
     node * searchSite = search(root, (char*)siteKey);
@@ -372,10 +466,20 @@ bool BST::retrieve(const char *siteKey, website & theSite)
 }
 
 
+/*
+ * Get the total number of items on this binary search tree.
+ */
 int BST::getCount() const
 {
     return count;
 }
+
+
+
+
+
+
+
 
 
 
