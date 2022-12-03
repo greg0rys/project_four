@@ -17,19 +17,18 @@ void menu()
 
     do {
         cout <<  " ****** MENU: ****** " << endl;
-        cout << "1.\t Add a Website to the table." << endl
-             << "2.\t Get all Websites based on a topic" << endl
-             << "3.\t Modify the Rating and Review for of a Website" << endl
-             << "4.\t Remove all Websites with a 1-Star rating" << endl
-             << "5.\t Display Websites by Topic" << endl
-             << "6.\t Display [ all ] Websites in the table" << endl
-             << "7.\t Display the length of each chain in the table" << endl
-             << "8.\t Quit the program" << endl;
+        cout << "1.\t Add a Website to the tree." << endl
+             << "2.\t Get a website by keyword." << endl
+             << "3.\t Display [ all ] Websites in the table" << endl
+             << "4.\t Remove [ all ] Websites of a topic." << endl
+             << "5.\t Remove a Website by keyword." << endl
+             << "6.\t Display the current height of the tree." << endl
+             << "7.\t Quit the program" << endl;
         cout << "Please enter a menu choice [EX 1. to add]: ";
         option = getInteger();
         menuOperations(theTree, option);
 
-    } while(option != 8);
+    } while(option != 7);
 }
 
 /*
@@ -40,12 +39,12 @@ void menu()
 void menuOperations(BST &aTree, int & operationNo)
 {
     website aWebsite;
-    char * topicName = nullptr;
+    char * searchKey = nullptr;
     char * siteURL = nullptr;
     website * searchResults = nullptr;
     int totalRemoved;
     int totalCounted;
-    int * chainLengths = nullptr;;
+    int * chainLengths = nullptr;
 
     int numResults = 0;
     switch(operationNo)
@@ -53,102 +52,101 @@ void menuOperations(BST &aTree, int & operationNo)
         case 1:
             generateWebsite(aWebsite);
             if(aTree.insert(aWebsite))
-                cout << "Success added: " << aWebsite.getURL() << endl;
-            cout << aTree.getSize() << endl;
+                cout << "Success added: " << aWebsite.getKey() << endl;
             break;
 
         case 2:
-            cout << "Please enter the name of the topic to display: ";
-            getInput(topicName);
-            if(aTree.retrieve(topicName, searchResults, numResults))
+            cout << "Please enter the keyword of the website to retrieve: ";
+            getInput(searchKey);
+            if(aTree.retrieve(searchKey, aWebsite))
             {
-                cout << "****** FOUND " << numResults << " ****** " << endl
-                     << "\t For Topic: " << topicName << endl;
-
-                for(auto i = 0; i < numResults; i++ )
-                {
-                    cout << searchResults[i] << endl;
-                }
+                cout << "****** FOUND " << searchKey << " ****** " << endl;
+                cout << aWebsite << endl;
             }
             else
             {
-                cout << "There were no websites found for: " << topicName <<
+                cout << "There were no websites found for: " << searchKey <<
                      endl;
             }
-            if(topicName)
-                delete []topicName;
-            topicName = nullptr;
-            if(searchResults)
-                delete []searchResults;
-            searchResults = nullptr;
+            if(searchKey)
+                delete []searchKey;
+            searchKey = nullptr;
             break;
-
         case 3:
-            generateSearchSite(aWebsite);
-            if(aTree.edit(aWebsite))
-            {
-                cout << "Success " << aWebsite.getURL() << " was updated "
-                     << endl << "\tNew Rating: " << aWebsite.getRating()
-                     << endl << "\tNew Review: \n\t" << aWebsite.getReview()
-                     << endl;
-            }
+            if(!aTree.isEmpty())
+                cout << aTree << endl;
             else
-            {
-                cout << "No matching Website found!" << endl;
-            }
+                cout << "The tree is empty!" << endl;
             break;
 
         case 4:
-            cout << "Removing all Websites with a rating of 1 " << endl;
-            totalRemoved =  aTree.remove();
-            cout << (totalRemoved == 0 ? "There were no Websites rated 1. "
-                                         "\tRemoved: " :
-                     "Removed: ") << (totalRemoved == 0 ? 0 : totalRemoved) << endl;
+            if(aTree.isEmpty())
+            {
+                cout << "Error the tree is empty! " << endl;
+                break;
+            }
+
+            cout << "**** HERES A LIST OF TOPICS **** "
+                 << aTree.printTopics() << endl;
+
+            cout << "Please enter the name of the topic you wish to remove: ";
+            getInput(searchKey);
+
+            if(aTree.remove(searchKey))
+            {
+                cout << "Success all websites for topic " << searchKey
+                     << " have been removed " << endl;
+            }
+            else
+            {
+                cout << "Error no matching topic for " << searchKey << endl;
+            }
+
+            // if this switch statement is called search key will always !=
+            // nullptr no check needed.
+            delete []searchKey;
+            searchKey = nullptr;
             break;
 
 
         case 5:
-            cout << "Which topic would you like to see the websites for? ";
-            getInput(topicName);
-            if(!aTree.printByTopic(topicName))
-                cout << "No Websites found for topic name: " << topicName <<
+            cout << "*** Here's a listLink of keywords *** " << endl;
+            cout << aTree.printKeys() << endl;
+            cout << "Please enter the key you want to remove: ";
+            getInput(searchKey);
+            if(!aTree.removeWebsite(searchKey,aWebsite))
+            {
+                cout << "No matching website for given key: " << searchKey <<
                      endl;
+            }
+            else
+            {
+                cout << "Removed: " << aWebsite.getKey() << " = " <<
+                aWebsite.getURL() << endl;
+            }
 
-            if(topicName)
-                delete []topicName;
-            topicName = nullptr;
+
+            if(searchKey)
+                delete []searchKey;
+            searchKey = nullptr;
             break;
 
         case 6:
-            cout << aTree << endl;
-            break;
-
-        case 7:
-            totalCounted = aTree.getTotalChains();
-            aTree.chainLength(chainLengths);
-            cout << "There are " << totalCounted
-                 << " Chains in the table " << endl;
-            for(auto i = 1; i <= totalCounted; i++)
+            if(aTree.isEmpty())
             {
-                cout << "Chain #" << i << endl
-                     << "\t Length: " << chainLengths[i - 1]
-                     << endl;
+                cout << "The tree is empty! " << endl;
+                break;
             }
 
-            // we only have to delete the pointer to the array
-            // because this array doesn't hold pointers it only holds
-            // regular ints so we don't have to free the items in the array.
-            if(chainLengths)
-                delete []chainLengths;
+            cout << "The current height of the tree is: " << aTree.getHeight()
+                 << endl << "\tThis tree currently has " << aTree.getCount()
+                 << " items in it" << endl;
             break;
-
-        case 8:
+        case 7:
             cout << "Thanks for using me! Goodbye!" << endl;
             break;
         default:
             cout << "That is not a valid menu choice try again " << endl;
-
-
 
     }
 }
@@ -198,43 +196,6 @@ void generateWebsite(website & aSite)
     if(siteReview)
         delete []siteReview;
     topicName = siteURL = siteSummary = siteReview = nullptr;
-}
-
-/*
- * Generate a website object to be used as a search key when searching by topic
- * @param aSite, a reference to a website that we will setup as the search site
- */
-void generateSearchSite(website &aSite)
-{
-    typedef char* charC;
-    charC topicName = nullptr;
-    charC siteReview = nullptr;
-    charC siteURL = nullptr;
-    int newRating;
-
-    cout << "Please enter the topic of the website to search for: ";
-    getInput(topicName);
-    cout << "Please enter the URL of the website to search for: ";
-    getInput(siteURL);
-    cout << "Please enter your new review for the website: ";
-    getInput(siteReview);
-    cout << "Please enter your new rating for the website on a scale of 5: ";
-    newRating = getInteger();
-
-    aSite.setTopic(topicName);
-    aSite.setURL(siteURL);
-    aSite.writeReview(siteReview);
-    aSite.setRating(newRating);
-
-    if(topicName)
-        delete []topicName;
-    if(siteReview)
-        delete []siteReview;
-    if(siteURL)
-        delete []siteURL;
-    topicName = siteReview = siteURL = nullptr;
-
-
 }
 
 

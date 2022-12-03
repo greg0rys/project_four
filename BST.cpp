@@ -1,12 +1,13 @@
 #include "BST.h"
 
-BST::BST(): root(nullptr), height(0)
+BST::BST(): root(nullptr), height(0),count(0)
 {}
 
 BST::BST(const website &aSite)
 {
     root = new node(aSite);
     height = 1;
+    count = 1;
 }
 
 
@@ -20,26 +21,57 @@ BST& BST::operator=(const BST &aTree)
 
     if(this == &aTree)
         return *this;
+
     destroy(root);
+
+    if(!aTree.root)
+    {
+        root = nullptr;
+        height = aTree.height;
+        count = aTree.count;
+        return *(this);
+    }
 
     copyTree(this->root, aTree.root);
     height = aTree.height;
+    count = aTree.count;
 
     return *this;
 }
 
-
+// in order traverse to copy the tree
 void BST::copyTree(BST::node *&destTree, BST::node *sourceTree)
 {
     if(!sourceTree) return;
 
-    destTree = new node(*(sourceTree->data),sourceTree->leftChild,
-                        sourceTree->rightChild);
+    destTree = new node(*(sourceTree->data) );
     copyTree(destTree->leftChild, sourceTree->leftChild);
     copyTree(destTree->rightChild, sourceTree->rightChild);
-    root = new node(sourceTree->data)
+
+}
+
+BST::node* BST::getRoot()
+{
+    return new node(*root);
+
+}
 
 
+int BST::getCount(node * tRoot)
+{
+
+    int totalNodes = 0;
+
+    if(!tRoot)
+        return 0;
+
+    if(tRoot->leftChild)
+        totalNodes += getCount(tRoot->leftChild);
+
+    if(tRoot->rightChild)
+        totalNodes += getCount(tRoot->rightChild);
+
+   return totalNodes;
 }
 
 
@@ -91,7 +123,53 @@ void BST::_print(node * tRoot)
     _print(tRoot->rightChild);
 }
 
-BST::node * BST::search(node * tRoot, char *key, int &pos)
+void BST::printTopics(const char * topic)
+{
+    if(isEmpty())
+        return;
+
+    listLink * topicsList = nullptr;
+    _getTopics(topic, root, topicsList);
+
+    for(auto curr = topicsList; topicsList; curr = curr->next)
+    {
+        listLink * temp = curr->next;
+        cout << curr->topic << endl;
+        delete curr;
+        curr = temp;
+
+    }
+
+    topicsList = nullptr;
+
+}
+
+
+void BST::_getTopics(const char *topic, const node *tRoot, BST::listLink *&
+topicsList)
+{
+    if(!tRoot)
+        return;
+
+
+
+    if(strcmp(tRoot->data->getTopic(),topic) == 0)
+    {
+        topicsList = new listLink(tRoot->data->getTopic(),nullptr);
+        _getTopics(topic, tRoot->leftChild, topicsList->next);
+        _getTopics(topic, tRoot->rightChild, topicsList->next);
+    }
+    else
+    {
+        _getTopics(topic, tRoot->leftChild, topicsList->next);
+        _getTopics(topic, tRoot->rightChild, topicsList->next);
+
+    }
+
+
+}
+
+BST::node * BST::search(node * tRoot, char *key)
 
 {
     if(!tRoot || strcmp(tRoot->data->getKey(), key) == 0)
@@ -99,10 +177,10 @@ BST::node * BST::search(node * tRoot, char *key, int &pos)
 
     if(tRoot->data->getKey() > key)
     {
-        return search(tRoot->leftChild, key, ++pos);
+        return search(tRoot->leftChild, key);
     }
 
-    return search(tRoot->rightChild, key, ++pos);
+    return search(tRoot->rightChild, key);
 }
 
 
@@ -125,7 +203,11 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
 
 
 	if(!tRoot)
-		return new node(aSite,nullptr,nullptr);
+    {
+        count++;
+        return new node(aSite,nullptr,nullptr);
+
+    }
 
 	if(*tRoot->data > aSite)
 	{
@@ -258,5 +340,16 @@ ostream& operator<<(ostream &out, BST & bTree)
     out << bTree.print() << endl;
 
     return out;
+}
+
+
+
+bool BST::retrieve(const char *siteKey, website & theSite)
+{
+    node * searchSite = search(root, (char*)siteKey);
+    if(searchSite)
+        theSite = *searchSite->data;
+
+    return searchSite != nullptr;
 }
 

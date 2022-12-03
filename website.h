@@ -32,6 +32,7 @@ public:
     void writeReview(const char *);
     void setRating(const int);
 
+
     // getters
     int getRating() const;
     char * getTopic() const;
@@ -49,5 +50,5 @@ private:
     int    rating;
 
     void destroySelf(); // deallocate all pointers in use.
-    void makeKey( char *);
+    void key();
 };
