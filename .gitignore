@@ -2,4 +2,6 @@ cmake-build-debug
 logins.txt
 *.o
 app
+.idea/BST.o driver.o website.o
+app
 .idea/
