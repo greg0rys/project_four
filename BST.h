@@ -17,14 +17,15 @@ public:
 
     bool insert(const website &);
     bool remove(const char *);
-    bool removeWebsite(const char *, website &); // use a website ref to
+    bool removeWebsite(website &); // use a website ref to
     // copy deleted data for use to see
     bool retrieve(const char *, website &);
     bool print();
     int getHeight() const;
+    int getCount() const;
     bool isEmpty() const;
-    void printTopics(const char *);
-    void printKeys(website *&);
+    void printTopics();
+    void printKeys();
 
 
 private:
@@ -76,6 +77,7 @@ private:
         }
     };
 
+    // a list link represents a forward linear SLL
     struct listLink
     {
         char * topic;
@@ -125,16 +127,15 @@ private:
 
 
     void destroy(node *&);
+    void destroyListLink(listLink *&);
     void copyTree(node *& destTree, node * sourceTree);
     bool _remove(node *&, const char *);
     void _print(node *);
-    void _getTopics(const char *, const node *, listLink *&)
-    void _printKeys(node *, website *&);
+    void _getTopics(const node *, listLink *&);
+    void _getKeys(BST::node *, BST::listLink *&);
     int getCurrentHeight(const node *) const;
-    int getCount(node *);
     int getFrequency(const char *);
 
-    BST::node * getRoot();
     BST::node * inOrderSuccessor(node *);
 	node * placeNode(node *, const website &); // recurse to place this node in the tree
 	node * search( node * , char *) ; // search for a

@@ -86,8 +86,8 @@ void menuOperations(BST &aTree, int & operationNo)
                 break;
             }
 
-            cout << "**** HERES A LIST OF TOPICS **** "
-                 << aTree.printTopics() << endl;
+            cout << "**** HERES A LIST OF TOPICS **** " << endl;
+            aTree.printTopics() ;
 
             cout << "Please enter the name of the topic you wish to remove: ";
             getInput(searchKey);
@@ -110,11 +110,13 @@ void menuOperations(BST &aTree, int & operationNo)
 
 
         case 5:
-            cout << "*** Here's a listLink of keywords *** " << endl;
-            cout << aTree.printKeys() << endl;
+            cout << "*** Here's a list of keywords *** " << endl;
+            aTree.printKeys();
+
             cout << "Please enter the key you want to remove: ";
             getInput(searchKey);
-            if(!aTree.removeWebsite(searchKey,aWebsite))
+            aWebsite.setKey(searchKey);
+            if(!aTree.removeWebsite(aWebsite))
             {
                 cout << "No matching website for given key: " << searchKey <<
                      endl;

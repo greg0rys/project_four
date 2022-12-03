@@ -50,30 +50,6 @@ void BST::copyTree(BST::node *&destTree, BST::node *sourceTree)
 
 }
 
-BST::node* BST::getRoot()
-{
-    return new node(*root);
-
-}
-
-
-int BST::getCount(node * tRoot)
-{
-
-    int totalNodes = 0;
-
-    if(!tRoot)
-        return 0;
-
-    if(tRoot->leftChild)
-        totalNodes += getCount(tRoot->leftChild);
-
-    if(tRoot->rightChild)
-        totalNodes += getCount(tRoot->rightChild);
-
-   return totalNodes;
-}
-
 
 BST::~BST()
 {
@@ -99,6 +75,15 @@ void BST::destroy(node *& tRoot)
     tRoot =  nullptr;
 }
 
+void BST::destroyListLink(BST::listLink *&head)
+{
+    if(!head)
+        return;
+    destroyListLink(head->next);
+    delete head;
+    head = nullptr;
+}
+
 
 bool BST::print()
 {
@@ -119,55 +104,81 @@ void BST::_print(node * tRoot)
         return;
 
     _print(tRoot->leftChild);
-    cout << tRoot->data << endl;
+    cout << *tRoot->data << endl;
     _print(tRoot->rightChild);
 }
 
-void BST::printTopics(const char * topic)
+void BST::printTopics()
 {
     if(isEmpty())
         return;
 
     listLink * topicsList = nullptr;
-    _getTopics(topic, root, topicsList);
+    int idx = 1;
+    _getTopics( root, topicsList);
 
-    for(auto curr = topicsList; topicsList; curr = curr->next)
+    for(auto *curr = topicsList; curr; curr = curr->next)
     {
-        listLink * temp = curr->next;
-        cout << curr->topic << endl;
-        delete curr;
-        curr = temp;
+        cout << idx << ".\t" << curr->topic << endl;
+        idx++;
 
     }
 
+    destroyListLink(topicsList);
     topicsList = nullptr;
 
 }
 
 
-void BST::_getTopics(const char *topic, const node *tRoot, BST::listLink *&
+void BST::printKeys()
+{
+    if(isEmpty())
+        return;
+
+    listLink *key = nullptr;
+    int idx = 1;
+    _getKeys(root, key);
+
+    for(auto *curr = key; curr; curr = curr->next)
+    {
+        cout << idx << ".\t" << curr->siteKey << " => " << curr->topic
+             << endl;
+        idx++;
+    }
+
+    destroyListLink(key);
+}
+
+
+void BST::_getTopics(const node *tRoot, BST::listLink *&
 topicsList)
 {
     if(!tRoot)
         return;
 
-
-
-    if(strcmp(tRoot->data->getTopic(),topic) == 0)
-    {
-        topicsList = new listLink(tRoot->data->getTopic(),nullptr);
-        _getTopics(topic, tRoot->leftChild, topicsList->next);
-        _getTopics(topic, tRoot->rightChild, topicsList->next);
-    }
-    else
-    {
-        _getTopics(topic, tRoot->leftChild, topicsList->next);
-        _getTopics(topic, tRoot->rightChild, topicsList->next);
-
-    }
-
+    topicsList = new listLink(tRoot->data->getTopic(),
+                               nullptr);
+    _getTopics( tRoot->leftChild, topicsList->next);
+    _getTopics(tRoot->rightChild, topicsList->next);
 
 }
+
+
+void BST::_getKeys(BST::node *tRoot, BST::listLink *& keyList)
+{
+
+    if(!tRoot)
+        return;
+
+    keyList = new listLink(tRoot->data->getKey(),
+                            tRoot->data->getURL());
+
+    _getKeys(tRoot->leftChild, keyList->next);
+    _getKeys(tRoot->rightChild, keyList->next);
+
+}
+
+
 
 BST::node * BST::search(node * tRoot, char *key)
 
@@ -192,9 +203,16 @@ bool BST::isEmpty() const
 
 bool BST::insert(const website &aSite)
 {
-    root = placeNode(root, aSite);
+    int updatedCount,currentCount;
 
-    return true;
+    currentCount = count; // get the count before the insert
+    root = placeNode(root, aSite);
+    updatedCount = getCount(); // get the newly updated count
+
+    // true if we added an item updated will be +1 currentCount
+    // false if current = updated. (ie no change in count = no addition to
+    // struct)
+    return currentCount != updatedCount;
 }
 
 
@@ -352,4 +370,19 @@ bool BST::retrieve(const char *siteKey, website & theSite)
 
     return searchSite != nullptr;
 }
+
+
+int BST::getCount() const
+{
+    return count;
+}
+
+
+
+
+
+
+
+
+
 
