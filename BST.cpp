@@ -126,7 +126,6 @@ void BST::printTopics()
     }
 
     destroyListLink(topicsList);
-    topicsList = nullptr;
 
 }
 
@@ -172,6 +171,7 @@ topicsList)
 
     topicsList = new listLink(tRoot->data->getTopic(),
                                nullptr);
+
     _getTopics( tRoot->leftChild, topicsList->next);
     _getTopics(tRoot->rightChild, topicsList->next);
 
@@ -267,14 +267,13 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
 	if(*tRoot->data > aSite)
 	{
         cout << "Adding as left child \n";
-        tRoot->leftChild = placeNode(tRoot->leftChild, aSite);
-        return tRoot;
+        return placeNode(tRoot->leftChild, aSite);
 	}
 
     cout << "Adding as right child \n";
-    tRoot->rightChild = placeNode(tRoot->rightChild, aSite);
+    return placeNode(tRoot->rightChild, aSite);
 
-	return tRoot;
+
 }
 
 /*
