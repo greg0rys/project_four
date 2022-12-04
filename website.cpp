@@ -275,10 +275,12 @@ website& website::operator=(const website &aSite)
 // if there was a case they could be nullptr we must check before printing it.
 ostream& operator<<(ostream & out, website &aSite)
 {
-    out <<  aSite.URL << "\tRating: " << aSite.rating
-        << "\tTopic: " << aSite.getTopic() <<endl;
-    out << "\tSummary:\n\t" << aSite.summary << endl;
-    out << "\tReview:\n\t" <<aSite.review << endl;
+    out <<  aSite.siteKey << " Rating: " << aSite.rating
+        << " Topic: " << aSite.getTopic() <<endl;
+    out << "\tURL: " << aSite.URL << endl;
+    out << "\tSummary: " <<aSite.summary << endl;
+	out << "\tReview: " << aSite.review << endl;
+	out << "\tRating: " << aSite.rating << endl;
 
     return out;
 }

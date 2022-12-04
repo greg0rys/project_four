@@ -12,8 +12,8 @@
 void menu()
 {
     BST theTree;
-
     int option = 0;
+	menuOperations(theTree, option);
 
     do {
         cout <<  " ****** MENU: ****** " << endl;
@@ -23,7 +23,8 @@ void menu()
              << "4.\t Remove [ all ] Websites of a topic." << endl
              << "5.\t Remove a Website by keyword." << endl
              << "6.\t Display the current height of the tree." << endl
-             << "7.\t Quit the program" << endl;
+             << "7.\t Quit the program" << endl
+			 << "8.\t Print Levels" << endl;
         cout << "Please enter a menu choice [EX 1. to add]: ";
         option = getInteger();
         menuOperations(theTree, option);
@@ -49,6 +50,17 @@ void menuOperations(BST &aTree, int & operationNo)
     int numResults = 0;
     switch(operationNo)
     {
+		case 0:
+			totalCounted = aTree.loadFromFile("bst.txt");
+			if(totalCounted <= 0)
+			{
+				cout << "Error no data loaded from bst.txt" << endl;
+				break;
+			}
+			cout << "Loaded " << totalCounted 
+				 << " websites into the tree\n";
+			break;
+
         case 1:
             generateWebsite(aWebsite);
             if(aTree.insert(aWebsite))
@@ -162,6 +174,9 @@ void menuOperations(BST &aTree, int & operationNo)
         case 7:
             cout << "Thanks for using me! Goodbye!" << endl;
             break;
+		case 8:
+			aTree.printLevels();
+			break;
         default:
             cout << "That is not a valid menu choice try again " << endl;
 

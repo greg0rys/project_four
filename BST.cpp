@@ -84,6 +84,55 @@ void BST::destroyListLink(BST::listLink *&head)
     head = nullptr;
 }
 
+/*
+ * Load saved CSV data to build a BST
+ * @param filename a char array with the name
+ * 		  of the file to load from.
+ * @return the total # of loaded items.
+ */
+
+int BST::loadFromFile(const char * filename)
+{
+	fstream file(filename);
+	int totalLoaded = 0,siteRating = 0;
+	const int MAX_CHAR = 300;
+	char siteTopic[MAX_CHAR],siteURL[MAX_CHAR],
+		 siteSummary[MAX_CHAR], siteReview[MAX_CHAR] = {0};
+	website siteData;
+
+	if(!file)
+		return 0;
+
+	file.get(siteTopic, MAX_CHAR, ';');
+
+	do
+	{
+		file.get();
+		file.get(siteURL, MAX_CHAR, ';');
+		file.get();
+		file.get(siteSummary, MAX_CHAR, ';');
+		file.get();
+		file.get(siteReview, MAX_CHAR, ';');
+		file.get();
+		file >> siteRating;
+		file.ignore(MAX_CHAR, '\n');
+
+		siteData.setTopic(siteTopic);
+		siteData.setURL(siteURL);
+		siteData.writeSummary(siteSummary);
+		siteData.writeReview(siteReview);
+		siteData.setRating(siteRating);
+
+		insert(siteData);
+		totalLoaded++;
+
+		file.get(siteTopic, MAX_CHAR, ';');
+	} while(!file.eof());
+	file.close();
+	return totalLoaded;
+}
+
+
 
 bool BST::print()
 {
@@ -129,6 +178,51 @@ void BST::printTopics()
 
 }
 
+void BST::printLevels()
+{
+	_printLevels(root);
+}
+
+void BST::_printLevels(node * root)
+{
+	listLink * left = nullptr, * right = nullptr;
+
+	if(!root)
+		return;
+
+	static int levelNO = 1;
+	if(!root)
+		return;
+	if(levelNO == 1)
+	{
+		cout << "At Level : " << levelNO << "\n"
+			 << root->data->getKey() << endl;
+		if(root->leftChild)
+			cout << root->leftChild->data->getKey();
+		if(!root->rightChild)
+			cout << endl;
+		else
+			cout << root->rightChild->data->getKey() << endl;
+		levelNO++;
+	}
+	else
+	{
+
+		cout << root->data->getKey() << endl;
+		if(root->leftChild)
+		{
+			cout << root->leftChild->data->getKey() << " ";
+			if(!root->rightChild)
+				cout << endl;
+		}
+		if(root->rightChild)
+			cout << root->rightChild->data->getKey() << endl;
+
+		_printLevels(root->leftChild);
+		_printLevels(root->rightChild);
+	}
+
+}
 
 /*
  * Print all the current keys for each website along with the URL
@@ -169,8 +263,10 @@ topicsList)
     if(!tRoot)
         return;
 
+	listLink * curr = topicsList;
     topicsList = new listLink(tRoot->data->getTopic(),
-                               nullptr);
+                               nullptr);;
+	topicsList->prev = curr;
 
     _getTopics( tRoot->leftChild, topicsList->next);
     _getTopics(tRoot->rightChild, topicsList->next);
@@ -261,17 +357,19 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
         cout << "Adding root node\n";
         count++;
         return new node(aSite,nullptr,nullptr);
-
     }
 
 	if(*tRoot->data > aSite)
 	{
         cout << "Adding as left child \n";
-        return placeNode(tRoot->leftChild, aSite);
+        tRoot->leftChild = placeNode(tRoot->leftChild, aSite);
 	}
-
-    cout << "Adding as right child \n";
-    return placeNode(tRoot->rightChild, aSite);
+	else
+	{  
+		cout << "Adding as right child \n";
+ 		tRoot->rightChild =  placeNode(tRoot->rightChild, aSite);
+	}
+	return tRoot;
 
 
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstring>
 #include <cctype>
+#include <fstream>
 #include "website.h"
 using namespace std;
 
@@ -15,6 +16,7 @@ public:
     BST& operator=(const BST &);
     friend ostream& operator<<(ostream &, BST &);
 
+	int loadFromFile(const char *);
     bool insert(const website &);
     bool remove(const char *);
     bool removeWebsite(website &); // use a website ref to
@@ -26,6 +28,7 @@ public:
     bool isEmpty() const;
     void printTopics();
     void printKeys();
+	void printLevels();
 
 
 private:
@@ -82,12 +85,12 @@ private:
     {
         char * topic;
         char * siteKey;
-        listLink * next;
+        listLink * next, * prev;
 
         listLink()
         {
             topic = siteKey = nullptr;
-            next = nullptr;
+            prev = next = nullptr;
         }
 
         listLink(const char * siteTopic, const char *sitesKey)
@@ -107,7 +110,7 @@ private:
                 siteKey = new char[strlen(sitesKey) + 1];
                 strcpy(siteKey, sitesKey);
             }
-            next = nullptr;
+            prev = next = nullptr;
         }
 
         ~listLink()
@@ -115,7 +118,7 @@ private:
             if(topic) delete []topic;
             if(siteKey) delete [] siteKey;
             topic = siteKey = nullptr;
-            next = nullptr;
+            prev = next = nullptr;
         }
 
 
@@ -131,6 +134,7 @@ private:
     void copyTree(node *& destTree, node * sourceTree);
     bool _remove(node *&, const char *, const bool );
     void _print(node *);
+	void _printLevels(node *);
     void _getTopics(const node *, listLink *&);
     void _getKeys(BST::node *, BST::listLink *&);
     int getCurrentHeight(const node *) const;
