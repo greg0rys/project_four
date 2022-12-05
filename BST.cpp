@@ -183,44 +183,45 @@ void BST::printLevels()
 	_printLevels(root);
 }
 
-void BST::_printLevels(node * root)
+void BST::_printLevels(node * tRoot)
 {
 	listLink * left = nullptr, * right = nullptr;
 
-	if(!root)
+    if(isEmpty())
+    {
+        cout << "Nothing to display.." << endl;
+        return;
+    }
+	if(!tRoot)
 		return;
 
-	static int levelNO = 1;
-	if(!root)
+	int levelNO = 1;
+
+	if(!tRoot)
 		return;
-	if(levelNO == 1)
-	{
-		cout << "At Level : " << levelNO << "\n"
-			 << root->data->getKey() << endl;
-		if(root->leftChild)
-			cout << root->leftChild->data->getKey();
-		if(!root->rightChild)
-			cout << endl;
-		else
-			cout << root->rightChild->data->getKey() << endl;
-		levelNO++;
-	}
-	else
-	{
+    cout << levelNO << " " << tRoot->data->getKey() << " ";
+    if(tRoot->leftChild)
+        cout << " Left child: " << tRoot->leftChild->data->getKey()
+             << " ";
+    if(tRoot->rightChild)
+        cout << " Right Child: " << tRoot->rightChild->data->getKey()
+              << endl;
+    else
+        cout << endl;
+    levelNO++;
+    if(tRoot->leftChild)
+    {
+        cout << "left: ";
+        _printLevels(tRoot->leftChild);
 
-		cout << root->data->getKey() << endl;
-		if(root->leftChild)
-		{
-			cout << root->leftChild->data->getKey() << " ";
-			if(!root->rightChild)
-				cout << endl;
-		}
-		if(root->rightChild)
-			cout << root->rightChild->data->getKey() << endl;
+    }
+    if(tRoot->rightChild)
+    {
+        cout << "right: ";
+        _printLevels(tRoot->rightChild);
 
-		_printLevels(root->leftChild);
-		_printLevels(root->rightChild);
-	}
+    }
+
 
 }
 
@@ -354,19 +355,16 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
 
 	if(!tRoot)
     {
-        cout << "Adding root node\n";
         count++;
         return new node(aSite,nullptr,nullptr);
     }
 
 	if(*tRoot->data > aSite)
 	{
-        cout << "Adding as left child \n";
         tRoot->leftChild = placeNode(tRoot->leftChild, aSite);
 	}
 	else
-	{  
-		cout << "Adding as right child \n";
+	{
  		tRoot->rightChild =  placeNode(tRoot->rightChild, aSite);
 	}
 	return tRoot;
@@ -379,12 +377,38 @@ BST::node * BST::placeNode(node * tRoot, const website & aSite)
  * it with its in order successor. This method traverses to
  * a given nodes in order successor and return sit.
  */
-BST::node* BST::inOrderSuccessor(node * tRoot)
+BST::node* BST::inOrderSuccessor(node * tRoot, node * successor,
+                                 const char * key)
 {
-    node * curr = tRoot->rightChild;
-    while(curr->leftChild)
-        curr = curr->leftChild;
-    return curr;
+    if(!tRoot)
+        return successor;
+
+    if(strcmp(tRoot->data->getKey(), key) == 0)
+    {
+        if(tRoot->rightChild)
+            return _findSuccessor(tRoot->rightChild);
+
+    }
+    else if(strcmp(key, tRoot->data->getKey()) < 0)
+    {
+        successor = tRoot;
+        return inOrderSuccessor(tRoot->leftChild, successor, key);
+
+    }
+    else
+    {
+        return inOrderSuccessor(tRoot->rightChild, successor,key);
+    }
+    return successor;
+}
+
+
+BST::node* BST::_findSuccessor(BST::node *tRoot)
+{
+
+    while(tRoot->leftChild)
+        tRoot = tRoot->leftChild;
+    return tRoot;
 }
 
 
@@ -393,9 +417,9 @@ BST::node* BST::inOrderSuccessor(node * tRoot)
  * @param topic - the topic of websites you wish to remove
  * @return true if the node was removed false if else.
  */
-bool BST::remove(const char * topic)
+bool BST::remove(const char * topic, website &aSite)
 {
-    return _remove(root, topic,false);
+    return _remove(root, topic,aSite,false);
 
 }
 
@@ -406,7 +430,7 @@ bool BST::remove(const char * topic)
  */
 bool BST::removeWebsite(website &aSite)
 {
-    return _remove(root, aSite.getKey(), true);
+    return _remove(root, aSite.getKey(), aSite, true);
 }
 
 /*
@@ -417,85 +441,107 @@ bool BST::removeWebsite(website &aSite)
  * @param tRoot the root of the binary tree
  * @param key - the key we want to use to identify websites
  */
-bool BST::_remove(node *& tRoot, const char * key, const bool singleSite)
+bool BST::_remove(node *& tRoot, const char * key,  website &aSite,
+                   bool singleSite)
 {
-    node * temp = nullptr;
 
     if(!tRoot)
         return false;
 
-    // remove a single website based on site key and not site topic
     if(singleSite)
     {
-        if(strcmp(tRoot->data->getKey(), key) == 0)
+        int result = strcmp(key, tRoot->data->getKey());
+        if(result == 0)
         {
-            if(!tRoot->leftChild && !tRoot->rightChild)
-            {
-                delete tRoot;
-                tRoot = nullptr;
-                return true;
-            }
-            else if(tRoot->rightChild)
-            {
-                temp = tRoot->leftChild;
-                delete tRoot;
-                tRoot = temp;
-                return true;
-            }
-            else if(tRoot->leftChild)
-            {
-                temp = tRoot->rightChild;
-                delete tRoot;
-                tRoot = temp;
-                return true;
-            }
-            else
-            {
-                temp = inOrderSuccessor(tRoot);
-                tRoot->data = temp->data;
-                _remove(tRoot->rightChild, key, singleSite);
-            }
+            aSite = *(tRoot->data);
+            deleteNode(tRoot);
+            count--;
+            return true;
+        }
+        else if(result < 0)
+        {
+            return _remove(tRoot->leftChild, key, aSite, singleSite);
+        }
+        else
+        {
+            return _remove(tRoot->rightChild, key, aSite,singleSite);
         }
     }
-    else // remove all websites of a given topic.
+    else
     {
-        // current nodes key is > search key; remove from left subtree
-        if(strcmp(tRoot->data->getTopic(), key) < 0)
-            return _remove(tRoot->leftChild, key, singleSite);
-        // current nodes key is < search key; remove from right subtree.
-        if(strcmp(tRoot->data->getTopic(), key) > 0)
-            return _remove(tRoot->rightChild, key, singleSite);
+        int result = strcmp(key, tRoot->data->getTopic());
 
-        if(!tRoot->leftChild && !tRoot->rightChild)
+        if(result == 0)
         {
-            delete tRoot;
-            tRoot = nullptr;
-            return true;
-        }
-        else if(tRoot->rightChild)
-        {
-            temp = tRoot->leftChild;
-            delete tRoot;
-            tRoot = temp;
-            return true;
-        }
-        else if(tRoot->leftChild)
-        {
-            temp = tRoot->rightChild;
-            delete tRoot;
-            tRoot = temp;
-            return true;
-        }
+            node *tempL = nullptr,*tempR = nullptr;
+            aSite = *tRoot->data;
+            tempL = tRoot->leftChild;
+            tempR = tRoot->rightChild;
+            deleteNode(tRoot);
+            count--;
+            if(!tempL && !tempR)
+                return true;
+            if(tempL)
+                return _remove(tempL,key,aSite,singleSite);
+            if(tempR)
+                return _remove(tempR,key,aSite,singleSite);
 
-        // node has two children
-        temp = inOrderSuccessor(tRoot);
-        tRoot->data = temp->data;
-        _remove(tRoot->rightChild, key, singleSite);
+        }
+        else if(result < 0)
+        {
+            return _remove(tRoot->leftChild,key,aSite,singleSite);
+        }
+        else
+        {
+            return _remove(tRoot->rightChild,key,aSite,singleSite);
+        }
     }
+}
 
 
-
-    return true;
+void BST::deleteNode(BST::node *&tRoot)
+{
+    node *temp = nullptr;
+    node * curr, * prev = nullptr;
+    if(!tRoot->leftChild && !tRoot->rightChild)
+    {
+        delete tRoot;
+        tRoot = nullptr;
+    }
+    else if(!tRoot->rightChild)
+    {
+        temp = tRoot;
+        tRoot = tRoot->leftChild;
+        delete temp;
+        temp = nullptr;
+    }
+    else if(!tRoot->leftChild)
+    {
+        temp = tRoot;
+        tRoot = tRoot->rightChild;
+        delete temp;
+        temp = nullptr;
+    }
+    else
+    {
+        curr = tRoot->rightChild;
+        if(!curr->leftChild)
+        {
+            tRoot->rightChild = curr->rightChild;
+        }
+        else
+        {
+            while(curr->leftChild)
+            {
+                prev = curr;
+                curr = curr->leftChild;
+            }
+            prev->leftChild = curr->rightChild;
+        }
+        tRoot->data = curr->data;
+        delete curr;
+        return;
+    }
 }
 
 

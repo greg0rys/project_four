@@ -18,7 +18,7 @@ public:
 
 	int loadFromFile(const char *);
     bool insert(const website &);
-    bool remove(const char *);
+    bool remove(const char *, website &);
     bool removeWebsite(website &); // use a website ref to
     // copy deleted data for use to see
     bool retrieve(const char *, website &);
@@ -132,7 +132,9 @@ private:
     void destroy(node *&);
     void destroyListLink(listLink *&);
     void copyTree(node *& destTree, node * sourceTree);
-    bool _remove(node *&, const char *, const bool );
+    bool _remove(node *&, const char *,  website &, bool);
+    void deleteNode(node *& tRoot);
+    BST::node* _findSuccessor(node * tRoot);
     void _print(node *);
 	void _printLevels(node *);
     void _getTopics(const node *, listLink *&);
@@ -140,7 +142,7 @@ private:
     int getCurrentHeight(const node *) const;
 
 
-    BST::node * inOrderSuccessor(node *);
+    BST::node * inOrderSuccessor(node *, node *, const char *);
 	node * placeNode(node *, const website &); // recurse to place this node in the tree
 	node * search( node * , char *) ; // search for a
     // node

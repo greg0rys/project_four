@@ -114,7 +114,7 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Please enter the name of the topic you wish to remove: ";
             getInput(searchKey);
 
-            if(aTree.remove(searchKey))
+            if(aTree.remove(searchKey,aWebsite))
             {
                 cout << "Success all websites for topic " << searchKey
                      << " have been removed " << endl;
