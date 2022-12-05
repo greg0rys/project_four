@@ -46,6 +46,8 @@ void menuOperations(BST &aTree, int & operationNo)
     int totalRemoved;
     int totalCounted;
     int * chainLengths = nullptr;
+    bool removed = false;
+    char ** keysArray = nullptr;
 
     int numResults = 0;
     switch(operationNo)
@@ -114,7 +116,7 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Please enter the name of the topic you wish to remove: ";
             getInput(searchKey);
 
-            if(aTree.remove(searchKey,aWebsite))
+            if(!aTree.remove(searchKey,aWebsite,removed))
             {
                 cout << "Success all websites for topic " << searchKey
                      << " have been removed " << endl;
@@ -126,7 +128,8 @@ void menuOperations(BST &aTree, int & operationNo)
 
             // if this switch statement is called search key will always !=
             // nullptr no check needed.
-            delete []searchKey;
+            if(searchKey)
+                delete []searchKey;
             searchKey = nullptr;
             break;
 
@@ -144,7 +147,8 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Please enter the key you want to remove: ";
             getInput(searchKey);
             aWebsite.setKey(searchKey);
-            if(!aTree.removeWebsite(aWebsite))
+            aTree.removeWebsite(aWebsite,removed);
+            if(removed)
             {
                 cout << "No matching website for given key: " << searchKey <<
                      endl;
@@ -175,7 +179,7 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Thanks for using me! Goodbye!" << endl;
             break;
 		case 8:
-			aTree.printLevels();
+			cout << "HI";
 			break;
         default:
             cout << "That is not a valid menu choice try again " << endl;

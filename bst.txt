@@ -1,0 +1,11 @@
+Programming;https://www.geeksforgeeks
+.org/how-to-determine-if-a-binary-tree-is-balanced;good;good;5
+Programming;https://www.techiedelight.com/find-inorder-successor-given-key-bst;
+helpful;
+informative;5
+Lectures;https://online.pcc.edu/d2l/le/content/442806/viewContent/9630666;
+lovely;very informative;5
+Tutorials;https://chrisjean.com/fix-apt-get-update-the-following-signatures
+-couldnt-be-verified-because-the-public-key-is-not-available;very helpful;good;
+5
+Tutorials;https://api.jquery.com/on;love jquery;good tutorials;5

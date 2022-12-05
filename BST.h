@@ -18,8 +18,8 @@ public:
 
 	int loadFromFile(const char *);
     bool insert(const website &);
-    bool remove(const char *, website &);
-    bool removeWebsite(website &); // use a website ref to
+    bool remove(const char *, website &, bool &);
+    bool removeWebsite(website &, bool &); // use a website ref to
     // copy deleted data for use to see
     bool retrieve(const char *, website &);
     bool print();
@@ -80,49 +80,7 @@ private:
         }
     };
 
-    // a list link represents a forward linear SLL
-    struct listLink
-    {
-        char * topic;
-        char * siteKey;
-        listLink * next, * prev;
 
-        listLink()
-        {
-            topic = siteKey = nullptr;
-            prev = next = nullptr;
-        }
-
-        listLink(const char * siteTopic, const char *sitesKey)
-        {
-            if (!siteTopic) {
-                topic = nullptr;
-
-            } else {
-                topic = new char[strlen(siteTopic) + 1];
-                strcpy(topic, siteTopic);
-            }
-
-            if (!sitesKey) {
-                siteKey = nullptr;
-            }
-            else {
-                siteKey = new char[strlen(sitesKey) + 1];
-                strcpy(siteKey, sitesKey);
-            }
-            prev = next = nullptr;
-        }
-
-        ~listLink()
-        {
-            if(topic) delete []topic;
-            if(siteKey) delete [] siteKey;
-            topic = siteKey = nullptr;
-            prev = next = nullptr;
-        }
-
-
-    };
 
 
     node * root;
@@ -130,21 +88,24 @@ private:
 
 
     void destroy(node *&);
-    void destroyListLink(listLink *&);
     void copyTree(node *& destTree, node * sourceTree);
-    bool _remove(node *&, const char *,  website &, bool);
+    bool _remove(node *&, const char *,  website &, bool, bool &);
     void deleteNode(node *& tRoot);
     BST::node* _findSuccessor(node * tRoot);
     void _print(node *);
-	void _printLevels(node *);
-    void _getTopics(const node *, listLink *&);
-    void _getKeys(BST::node *, BST::listLink *&);
+    void _printKeys(node *);
+    void _printTopics(node *);
+    void _getTopics(const node *, node *&);
+    void _getKeys(BST::node *, node *&);
     int getCurrentHeight(const node *) const;
+    int getFrequency(node * tRoot, const char * key);
 
 
     BST::node * inOrderSuccessor(node *, node *, const char *);
 	node * placeNode(node *, const website &); // recurse to place this node in the tree
-	node * search( node * , char *) ; // search for a
+    BST::node* placeNodeSorted(node * tRoot, const website &);
+	node * search( node * , char *, bool ) ; // search for a
+
     // node
     // return where it should be
 };
