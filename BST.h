@@ -28,7 +28,7 @@ public:
     bool isEmpty() const;
     void printTopics();
     void printKeys();
-	void printLevels();
+	int getFrequency(const char *);
 
 
 private:
@@ -89,22 +89,20 @@ private:
 
     void destroy(node *&);
     void copyTree(node *& destTree, node * sourceTree);
-    bool _remove(node *&, const char *,  website &, bool, bool &);
-    void deleteNode(node *& tRoot);
-    BST::node* _findSuccessor(node * tRoot);
+    bool _remove(node *&, const char *, bool &);
+    bool checkArray(website *, const char *, int &arraySize);
+    BST::node* deleteNode(node *& tRoot, const char *, bool);
     void _print(node *);
-    void _printKeys(node *);
-    void _printTopics(node *);
-    void _getTopics(const node *, node *&);
-    void _getKeys(BST::node *, node *&);
+    void _printTopics(node *, int &);
+    void _printKeys(node *,int &);
     int getCurrentHeight(const node *) const;
     int getFrequency(node * tRoot, const char * key);
+    int _getCount(node *) const;
 
 
-    BST::node * inOrderSuccessor(node *, node *, const char *);
-	node * placeNode(node *, const website &); // recurse to place this node in the tree
-    BST::node* placeNodeSorted(node * tRoot, const website &);
-	node * search( node * , char *, bool ) ; // search for a
+    BST::node * inOrderSuccessor(node *);
+    BST::node * placeNode(node *, const website &);
+	BST::node * search( node * , char *);
 
     // node
     // return where it should be

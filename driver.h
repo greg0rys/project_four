@@ -10,7 +10,7 @@ using namespace std;
 int main();
 void menu();
 void menuOperations(BST &, int &);
-void getInput(char *&);
+bool getInput(char *&);
 void generateWebsite(website &);
 void generateSearchSite(website &);
 int getInteger();

@@ -109,15 +109,18 @@ void website::writeReview(const char * reviewInfo)
  */
 void website::setKey(const char * key)
 {
-	if(!key)
-		return;
-
-	if(this->siteKey)
-		delete []siteKey;
-
-	siteKey = nullptr;
-	siteKey = new char[strlen(key) + 1];
-	strcpy(siteKey, key);
+    if(this->siteKey)
+        delete []siteKey;
+    if(!key)
+    {
+        siteKey = nullptr;
+        return;
+    }
+    else
+    {
+        siteKey = new char[101]{0};
+        strcpy(siteKey, key);
+    }
 }
 
 
@@ -128,14 +131,22 @@ void website::setKey(const char * key)
  */
 void website::key()
 {
-    char * key = new char[strlen(strrchr(URL, '/')) + 1];
-    strcpy(key, strrchr(URL,'/'));
-    for(auto i = 0; i < strlen(key); i++)
-        key[i] = key[i + 1];
-    setKey(key);
+    char * key = new char[101]{0};
+    char * dup = new char[101]{0};
+    strncpy(key, strrchr(URL,'/'),20);
+    for(auto i = 0; i < 21; i++)
+        dup[i] = key[i + 1];
 
+    if(siteKey)
+        delete []siteKey;
+    siteKey = new char[101]{0};
+    strcpy(siteKey,dup);
+
+    if(dup)
+        delete []dup;
     if(key)
         delete []key;
+
 }
 
 /*

@@ -41,15 +41,9 @@ void menuOperations(BST &aTree, int & operationNo)
 {
     website aWebsite;
     char * searchKey = nullptr;
-    char * siteURL = nullptr;
-    website * searchResults = nullptr;
-    int totalRemoved;
     int totalCounted;
-    int * chainLengths = nullptr;
     bool removed = false;
-    char ** keysArray = nullptr;
 
-    int numResults = 0;
     switch(operationNo)
     {
 		case 0:
@@ -77,7 +71,7 @@ void menuOperations(BST &aTree, int & operationNo)
                 break;
             }
 
-            cout << "****** HERES A LIST OF SITE KEYS ****** \n";
+            cout << "****** HERE'S A LIST OF SITE KEYS ****** \n";
             aTree.printKeys();
             cout << endl;
             cout << "Please enter the keyword of the website to retrieve: ";
@@ -116,10 +110,12 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Please enter the name of the topic you wish to remove: ";
             getInput(searchKey);
 
-            if(!aTree.remove(searchKey,aWebsite,removed))
+            totalCounted = aTree.getFrequency(searchKey);
+            aTree.remove(searchKey,aWebsite,removed);
+            if(removed)
             {
-                cout << "Success all websites for topic " << searchKey
-                     << " have been removed " << endl;
+                cout << "Success " << totalCounted
+                     << " websites removed for " << searchKey << endl;
             }
             else
             {
@@ -147,15 +143,17 @@ void menuOperations(BST &aTree, int & operationNo)
             cout << "Please enter the key you want to remove: ";
             getInput(searchKey);
             aWebsite.setKey(searchKey);
+            cout << aWebsite.getKey() << endl;
             aTree.removeWebsite(aWebsite,removed);
             if(removed)
             {
-                cout << "No matching website for given key: " << searchKey <<
-                     endl;
+
+                cout << "Removed: " << aWebsite.getKey() << endl;
             }
             else
             {
-                cout << "Removed: " << aWebsite.getKey() << endl;
+                cout << "No matching website for given key: " << searchKey <<
+                     endl;
             }
 
 
@@ -202,16 +200,36 @@ void generateWebsite(website & aSite)
     int siteRating;
 
     cout << "Please enter the topic of the website [EX Programming]: ";
-    getInput(topicName);
+   while(!getInput(topicName))
+   {
+        cout << "Please enter the topic of the website [EX Programming]: ";
+        getInput(topicName);
+   }
+
     cout << "Please enter the URL of the website [ LIKE https://www.google"
          << ".com ]: ";
-    getInput(siteURL);
+   while(!getInput(siteURL))
+   {
+       cout << "Please enter the URL of the website [ LIKE https://www.google"
+            << ".com ]: ";
+       getInput(siteURL);
+   }
     cout << "Please enter a summary of this websites content: [ Like Linked "
          <<   "Lists ]: ";
-    getInput(siteSummary);
+    while(!getInput(siteSummary))
+    {
+        cout << "Please enter a summary of this websites content: [ Like Linked "
+             <<   "Lists ]: ";
+        getInput(siteSummary);
+    }
     cout << "Please enter a review for this website [ EX How helpful you find"
          <<  " this websites content ]: ";
-    getInput(siteReview);
+    while(!getInput(siteReview))
+    {
+        cout << "Please enter a review for this website [ EX How helpful you find"
+             <<  " this websites content ]: ";
+             getInput(siteReview);
+    }
     cout << "How would you rate this website on a scale of 5 [ EX 1 not very"
          <<   " helpful 5 very helpful ]: ";
     siteRating = getInteger();
@@ -239,7 +257,7 @@ void generateWebsite(website & aSite)
 /*
  * Get character input dynamically from the user.
  */
-void getInput(char *& chars) {
+bool getInput(char *& chars) {
     char *input = nullptr; // store the input from input stream
     char *temp = nullptr; // store a temp copy of the input each time input
     // grows
@@ -272,11 +290,23 @@ void getInput(char *& chars) {
     }
 
 
-    chars = new char[strlen(input) + 1];
-    // copy the users input into the passed in pointer.
-    strcpy(chars, input);
-    // get rid of our dynamic input pointer.
-    delete[]input;
+    if(input)
+    {
+        chars = new char[strlen(input) + 1];
+        // copy the users input into the passed in pointer.
+        strcpy(chars, input);
+        // get rid of our dynamic input pointer.
+        if(input)
+            delete[]input;
+        return true;
+    }
+    else
+    {
+        cerr << "You didn't provide any input\ttry again!\n";
+
+        return false;
+    }
+
 }
 
 
@@ -288,6 +318,7 @@ int getInteger()
 {
     int numberIn;
     cin >> numberIn;
+
 
     while(cin.fail())
     {
